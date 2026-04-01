@@ -1,0 +1,696 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://twitter241.p.rapidapi.com/search-v2?type=People&count=20&query=AI%20agency%20marketing",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "7fd10580d0msh1598223dc69a18cp1b8bc6jsn20b3efc04bd7"
+            },
+            {
+              "name": "X-Rapidapi-Host",
+              "value": "twitter241.p.rapidapi.com"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Host",
+              "value": "twitter241.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -32,
+        784
+      ],
+      "id": "f22adebe-a546-4ec2-9ea4-92ce3b66dd4b",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const entries = $json.result.timeline.instructions[1].entries;\n\nreturn entries\n  .filter(e => e.content?.itemContent?.__typename === \"TimelineUser\")\n  .map(e => {\n    const user = e.content.itemContent.user_results.result;\n    const legacy = user.legacy;\n    const core = user.core;\n    return {\n      json: {\n        username: core.screen_name || \"unknown\",\n        name: core.name || \"unknown\",\n        bio: legacy.description || \"\",\n        followers: legacy.followers_count || 0,\n        location: user.location?.location || \"\",\n        verified: user.is_blue_verified || false,\n        protected: user.privacy?.protected || false\n      }\n    };\n  });"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        784
+      ],
+      "id": "7d083e75-2758-4602-af0c-ccbaa1474d2f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2d9c529d-54ec-4fa0-b982-a9445808ee30",
+              "leftValue": "={{$json.bio.toLowerCase().includes('agency') || $json.bio.toLowerCase().includes('marketing')}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "3a65a45e-b567-4327-8f4a-ef99e51d4e5d",
+              "leftValue": "={{$json.followers}}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "e6cf3030-b893-40bd-a8b6-ab4aa31d6f92",
+              "leftValue": "={{$json.protected}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        784
+      ],
+      "id": "a14b331e-0623-43da-a0a2-fe59b76cc41a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc",
+          "mode": "list",
+          "cachedResultName": "Leads_X",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "username": "={{$json.username}}",
+            "name": "={{$json.name}}",
+            "bio": "={{$json.bio}}",
+            "location": "={{$json.location}}",
+            "followers": "={{$json.followers}}",
+            "dm_sent": "false",
+            "timestamp": "={{new Date().toISOString()}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "followers",
+              "displayName": "followers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dm_sent",
+              "displayName": "dm_sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        640,
+        784
+      ],
+      "id": "3228213c-a48b-4985-9a77-d01fb0b3863d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "giBndL1tYPKa3R6e",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        1080
+      ],
+      "id": "8e8bbf61-4413-49cc-a996-a07a89aed62f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const entries = $json.result.timeline.instructions[1].entries;\n\nconst first = entries.find(e => e.content?.itemContent?.__typename === \"TimelineUser\");\nconst user = first.content.itemContent.user_results.result;\n\nreturn [{ json: { userKeys: Object.keys(user), sample: JSON.stringify(user).substring(0, 500) } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        560
+      ],
+      "id": "83248950-5324-480d-8f98-688b93cb9097",
+      "name": "Debugg"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc",
+          "mode": "list",
+          "cachedResultName": "Leads_X",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        1080
+      ],
+      "id": "775b13ec-b65c-4c8c-838c-344f43b94949",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "giBndL1tYPKa3R6e",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst capped = items.slice(0, 1); // max 15 follows per run\n\nreturn capped.map(item => {\n  item.json.wait_seconds = Math.floor(Math.random() * 45) + 45; // 45–90s\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        1080
+      ],
+      "id": "73023c8e-01d3-4ab3-8505-b560aebbd84e",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0f688b9a-973a-4b9c-8d2a-902dbc413d58",
+              "leftValue": "={{$json.followed}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "3dbf57b2-b575-41c0-8826-5f26e390174e",
+              "leftValue": "={{$json.followers}}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "d2cf878a-d127-4374-804f-10feabeb3d0e",
+              "leftValue": "={{$json.protected}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        1080
+      ],
+      "id": "892cb952-48bf-43cf-9a11-bfda97a3cba2",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        864,
+        1080
+      ],
+      "id": "3b15a4f6-6de5-4735-b31e-ae0bedae714f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twitter.com/1.1/friendships/create.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth1Api",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "screen_name",
+              "value": "={{$json.username}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1088,
+        1008
+      ],
+      "id": "f49cfed5-1534-4926-8b4a-638c7f0427de",
+      "name": "HTTP Request",
+      "credentials": {
+        "oAuth1Api": {
+          "id": "t9oc5Spx8z7POrJO",
+          "name": "x_api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 45
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        1008
+      ],
+      "id": "189020d7-36ba-4d94-8735-956380b3736a",
+      "name": "Wait1",
+      "webhookId": "f5737f16-d12b-418a-8834-144f8221edff"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc",
+          "mode": "list",
+          "cachedResultName": "Leads_X",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zTJb9ToFT2Zw7mlX5GomtKEJfOIdNoUGR3tKgDSS9oc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "username": "={{$json.username}}",
+            "followed": "true",
+            "followed_at": "=={{new Date().toISOString()}}"
+          },
+          "matchingColumns": [
+            "username"
+          ],
+          "schema": [
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "followers",
+              "displayName": "followers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "dm_sent",
+              "displayName": "dm_sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "followed",
+              "displayName": "followed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "followed_at",
+              "displayName": "followed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1536,
+        1080
+      ],
+      "id": "34a18a10-cc07-4239-8bab-aed2bcd2d36d",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "giBndL1tYPKa3R6e",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0ef148af-f56e-4b60-8a31-776847e26988",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c1911135653d03e6e6f2c1b45c2611b0000bf287c29959a7368e7ef9b1c8c799"
+  },
+  "id": "wJtxhzu6DluQ6gbR",
+  "tags": []
+}
