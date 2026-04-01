@@ -4,6 +4,9 @@ An end-to-end Twitter/X outreach automation system built for an AI agency intern
 Scrapes targeted leads, filters them by quality, logs to Google Sheets, and sends 
 AI-personalised DMs to follow-backs.
 
+this is the project screen recording:
+https://youtu.be/PaQ5b2D3daw
+
 ## What It Does
 - Scrapes Twitter/X users by keyword (AI agency, marketing) via RapidAPI
 - Filters leads: bio keywords + followers > 50 + not protected
